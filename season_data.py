@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-Created on Fri Mar  6 10:36:46 2020
-
-@author: Alessandro
+@author: Alessandro Vadalà
 """
 
 import json
