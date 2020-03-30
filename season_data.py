@@ -209,10 +209,13 @@ def create_match_stats(match_data):
     values = away_1st_values+away_2nd_values+away_tot_values+home_1st_values+home_2nd_values+home_tot_values
     
     for val in range(len(values)):
+        if '(' in values[val]:
+            values[val] = str(values[val]).partition('(')[2]
+        values[val] = str(values[val]).partition('%')[0]
         for char in BAD_CHARS:
             values[val] = str(values[val]).replace(char, '')
-            if len(values[val]) > 3:
-                values[val] = str(values[val])[0:3]
+        if values[val] == '':
+            values[val] = 0
         values[val] = int(values[val])
                 
     nv = dict(zip(names, values))
@@ -247,12 +250,13 @@ def create_player_match_stats(match_data, players_data):
         stat_val = dict(zip(PLAYER_MATCH_STATS_COLS, stats))
         for val in stat_val.keys():
             if val not in ['player_team_season_id', 'match_id']:
-                for char in BAD_CHARS:
-                    if stat_val[val] is not None:
+                if stat_val[val] is not None:
+                    if '(' in stat_val[val]:
+                        stat_val[val] = str(stat_val[val]).partition('(')[2]
+                    stat_val[val] = str(stat_val[val]).partition('%')[0]
+                    for char in BAD_CHARS:
                         stat_val[val] = str(stat_val[val]).replace(char, '')
                 if stat_val[val] is not None:
-                    if len(stat_val[val]) > 3:
-                        stat_val[val] = str(stat_val[val])[0:3]
                     if stat_val[val] == '':
                         stat_val[val] = 0
                     if val not in ['position', 'rating']:
