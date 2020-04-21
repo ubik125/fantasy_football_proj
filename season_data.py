@@ -1,7 +1,3 @@
-"""
-@author: Alessandro Vadalà
-"""
-
 import json
 import requests
 import time
@@ -16,13 +12,13 @@ MATCH_JSON_URL = '/json?_=157878006'
 PLAYERS_JSON_URL = '/statistics/players/json?_=157878006'
 BAD_CHARS = ["'", "%", "(",")", "/", "[", "]", "`",",", " ","-","–"]
 PLAYER_MATCH_STATS_COLS = ['player_team_season_id', 'match_id', 'goals',
-       'goal_assist', 'total_tackle', 'total_pass', 'total_duels', 'ground_duels',
-       'aerial_duels', 'minutes_played', 'position', 'rating', 'shots_on_target',
-       'shots_off_target', 'shots_blocked', 'total_contest', 'total_clearance',
-       'outfielder_block', 'interception_won', 'challenge_lost', 'touches',
-       'accurate_pass', 'key_pass', 'total_cross', 'total_longballs',
-       'possession_lost', 'fouls', 'fouls_suffered', 'saves', 'punches', 'runs_out',
-       'good_high_claim']
+                           'goal_assist', 'total_tackle', 'total_pass', 'total_duels', 'ground_duels',
+                           'aerial_duels', 'minutes_played', 'position', 'rating', 'shots_on_target',
+                           'shots_off_target', 'shots_blocked', 'total_contest', 'total_clearance',
+                           'outfielder_block', 'interception_won', 'challenge_lost', 'touches',
+                           'accurate_pass', 'key_pass', 'total_cross', 'total_longballs',
+                           'possession_lost', 'fouls', 'fouls_suffered', 'saves', 'punches', 'runs_out',
+                           'good_high_claim']
 
 def fetch_round_data(round_url):
     response_round = requests.get(round_url)
@@ -147,15 +143,16 @@ def create_matches(match_data):
     with session_scope() as session:
         st_id = session.query(Season_tournament.season_tourn_id).filter(Season_tournament.season_id==seas_id,
                                                                     Season_tournament.tournament_id==tourn_id).scalar()
-    matches_dic = {'match_id': match_data['event']['id'],
-                     'match_name': match_data['event']['name'],
-                     'season_tourn_id': st_id,
-                     'home_team_season_id': hts_id,
-                     'away_team_season_id': ats_id,
-                     'start_hour': match_data['event']['startTime'],
-                     'match_date': match_data['event']['formatedStartDate'],
-                     'stadium': match_data['event']['venue']['stadium']['name'],
-                     'country': match_data['event']['venue']['country']['name']}
+    matches_dic = { 'match_id': match_data['event']['id'],
+                    'match_name': match_data['event']['name'],
+                    'season_tourn_id': st_id,
+                    'home_team_season_id': hts_id,
+                    'away_team_season_id': ats_id,
+                    'start_hour': match_data['event']['startTime'],
+                    'match_date': match_data['event']['formatedStartDate'],
+                    'stadium': match_data['event']['venue']['stadium']['name'],
+                    'country': match_data['event']['venue']['country']['name']
+                  }
     return matches_dic
 
 def fill_stat_list(match_data, period, what):
@@ -183,13 +180,14 @@ def create_match_stats(match_data):
             .filter(Player_team_season.player_id==home_pid, Player_team_season.is_active==1).scalar()
         abpid = session.query(Player_team_season.player_team_season_id)\
             .filter(Player_team_season.player_id==away_pid, Player_team_season.is_active==1).scalar()
-    ms_dic = {'match_id': match_data['event']['id'],
+    ms_dic = {  'match_id': match_data['event']['id'],
                 'home_score': match_data['event']['homeScore']['current'],
                 'away_score': match_data['event']['awayScore']['current'],
                 'home_best_player_id': hbpid,
                 'away_best_player_id': abpid,
                 'home_formation': home_form,
-                'away_formation': away_form}
+                'away_formation': away_form
+             }
     tot_names = fill_stat_list(match_data, 0, 'name')
     first_names = fill_stat_list(match_data, 1, 'name')    
     scnd_names = fill_stat_list(match_data, 2, 'name')
@@ -351,7 +349,7 @@ def fetch_match_players_data(match_list):
     return  print(problematic_matches)
 
 if __name__ == '__main__':
-    engine = create_engine('mysql://alex:a1234567!@localhost/fantasy_football?charset=utf8mb4',
+    engine = create_engine('mysql+pymysql://alex:a1234567!@localhost/fantasy_football?charset=utf8mb4',
                            echo = True)
     Base = automap_base()
     Base.prepare(engine, reflect = True)
